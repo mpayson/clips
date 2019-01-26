@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title>1 - Trail</title>
+
+  <link rel="stylesheet" href="https://js.arcgis.com/4.10/esri/css/main.css">
+  <script src="https://js.arcgis.com/4.10/"></script>
+
+  <script>
+    require([
+      "esri/views/SceneView",
+      "esri/layers/FeatureLayer",
+      "esri/layers/support/LabelClass",
+      "esri/WebScene",
+      "esri/core/watchUtils"
+    ], function(
+      SceneView, FeatureLayer, LabelClass, WebScene, wU
+    ) {
+
+      // const waypoints = [{
+      //   delay: 1000,
+      //   camera: {
+      //     position: [10.199815795838068, 46.6342547504808, 14259.045072331093],
+      //     heading: 339.9506022560457,
+      //     tilt: 0.4990399674256852
+      //   }
+      // }, {
+      //   delay: 2000,
+      //   camera: {
+      //     position: [10.283599660714222, 46.543452097525936, 4162.991283870302],
+      //     heading: 327.74158624034203,
+      //     tilt: 79.71789701155856
+      //   }
+      // }, {
+      //   delay: 2000,
+      //   camera: {
+      //     position: [10.201716615986287, 46.62552045019971, 2830.5798633769155],
+      //     heading: 327.68210202820336,
+      //     tilt: 79.78497478033171
+      //   }
+      // }, {
+      //   delay: 2000,
+      //   camera: {
+      //     position: [10.202255236313823, 46.625036407736545, 2352.4326939349994],
+      //     heading: 327.62833987988,
+      //     tilt: 84.1252727420127
+      //   }
+      // }]
+
+      var scene = new WebScene({
+        portalItem: {
+          id: "d0580bb5df3840d384bda44b6ddeb54e"
+        }
+      });
+
+      var labelClass = new LabelClass({
+        labelPlacement: "above-center",
+        labelExpressionInfo: {
+          expression: `$feature.Name`
+        },
+        symbol: {
+          type: "label-3d",
+          symbolLayers: [{
+            type: "text",
+            material: {
+            color: "white"
+            },
+            halo: {
+              color: "#db5353",
+              size: 1
+            },
+            font: {
+              family: "Open Sans Condensed",
+              weight: "bold"
+            },
+            size: 13
+          }],
+          verticalOffset: {
+            screenLength: 80,
+            maxWorldLength: 2000,
+            minWorldLength: 500
+          },
+          callout: {
+            type: "line",
+            size: 2,
+            color: "white",
+            border: {
+              color: "#db5353"
+            }
+          }
+        }
+      });
+
+      var lyr = new FeatureLayer({
+        url: "https://services2.arcgis.com/cFEFS0EWrhfDeVw9/arcgis/rest/services/SwissNationalParkTrails/FeatureServer/0",
+        title: "Hiking trails",
+        outFields: ["*"],
+        renderer: {
+          type: "unique-value",
+          field: "RouteId",
+          defaultSymbol: {
+            type: "line-3d",
+            symbolLayers: [{
+              type: "line",
+              size: 2,
+              material: { color: "#db5353" }
+            }]
+          }
+        },
+        elevationInfo: {
+          mode: "on-the-ground"
+        },
+        labelsVisible: true,
+        popupEnabled: false,
+        labelingInfo: [labelClass]
+      });
+      
+      scene.add(lyr);
+
+      var view = new SceneView({
+        map: scene,
+        container: "viewDiv",
+      });
+
+      // view.when(_ => wU.whenFalseOnce(view, 'updating'))
+      // .then(_ => {
+      //   let prevPromise = view.goTo(waypoints[0].camera, {duration: waypoints[0].delay, easing: 'linear'});
+      //   waypoints.slice(1).forEach(wp => 
+      //     prevPromise = prevPromise.then(_ => view.goTo(wp.camera, {duration: wp.delay, easing: 'linear'}))
+      //   );
+      // })
+      // .catch(er => console.log(er))
+
+    });
+  </script>
+
+  <style>
+    html,
+    body,
+    #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+
+</head>
+
+<body>
+  <div id="viewDiv"/>
+</body>
+
+</html>

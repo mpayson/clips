@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Distance to public transport in San Francisco</title>
+  <link rel="stylesheet" href="https://js.arcgis.com/4.10/esri/css/main.css">
+  <script src="https://js.arcgis.com/4.10/"></script>
+
+  <style>
+    html,
+    body,
+    #viewDiv {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    .tooltip {
+      position: absolute;
+      pointer-events: none;
+      transition: opacity 200ms;
+    }
+
+    .tooltip>div {
+      margin: 0 auto;
+      padding: 5px;
+      border-radius: 4px;
+      box-shadow: 0px 0px 4px rgba(255, 255, 255, 0.75);
+      transform: translate3d(-50%, -125%, 0);
+    }
+  </style>
+
+  <script>
+    require([
+      "esri/WebScene",
+      "esri/layers/SceneLayer",
+      "esri/views/SceneView",
+      "esri/widgets/Legend",
+      "dojo/domReady!"
+    ], function (
+      WebScene,
+      SceneLayer,
+      SceneView,
+      Legend
+    ) {
+        const webscene = new WebScene({
+          portalItem: {
+            id: "03054c6a97f2423f93ff3679008658bb"
+          }
+        });
+
+        const view = new SceneView({
+          map: webscene,
+          container: "viewDiv",
+          qualityProfile: "high",
+          environment: {
+            lighting: {
+              directShadowsEnabled: true,
+              ambientOcclusionEnabled: true
+            },
+            atmosphereEnabled: true,
+            atmosphere: {
+              quality: "high"
+            }
+          }
+        });
+
+        const buildingsLayer = new SceneLayer({
+          portalItem: {
+            id: "f5c497819a374941b0ce8d9b0e979819"
+          },
+          title: "San Francisco buildings",
+          renderer: {
+            type: "simple",
+            symbol: {
+              type: "mesh-3d",
+              symbolLayers: [{
+                type: "fill",
+                material: {
+                  color: "#ffffff",
+                  colorMixMode: "replace"
+                },
+                edges: {
+                  type: "solid",
+                  color: [50, 50, 50, 0.6],
+                  size: 1
+                }
+              }]
+            },
+            visualVariables: [{
+              type: "color",
+              field: "walkTimeToStopsInService",
+              legendOptions: {
+                title: "Walking time to public transport"
+              },
+              stops: [
+                {
+                  value: 1,
+                  label: "less than 1 minute",
+                  color: [96, 109, 148, 1]
+                },
+                {
+                  value: 5,
+                  label: "5 minutes",
+                  color: [164, 141, 158, 1]
+                },
+                {
+                  value: 10,
+                  label: "10 minutes",
+                  color: [197, 156, 164, 1]
+                },
+                {
+                  value: 14,
+                  label: "14 minutes",
+                  color: [232, 201, 179, 1]
+                },
+                {
+                  value: 19,
+                  label: "more than 19 minutes",
+                  color: [233, 215, 184, 1]
+                }
+              ]
+            }]
+          }
+        });
+
+        webscene.add(buildingsLayer);
+        const legend = new Legend({
+          view: view
+        });
+
+        view.ui.add(legend, "bottom-right");
+
+        let lyrView;
+        view.whenLayerView(buildingsLayer).then(lv => lyrView = lv);
+
+        let highlight;
+        const tooltip = createTooltip();
+        view.on('pointer-move', evt => {
+          if(view.interacting || !lyrView) return;
+          view.hitTest({x: evt.x, y: evt.y}).then(res => {
+            let graphic = res.results[0] ? res.results[0].graphic : null;
+            console.log(graphic);
+            if(highlight) {
+              highlight.remove()
+            };
+            if(!graphic) {
+              tooltip.hide();
+              return;
+            };
+            
+            highlight = lyrView.highlight(graphic);
+            tooltip.show(event, `<b>Walk time:</b> ${graphic.attributes['walkTimeToStopsInService']} min`);
+          })
+          .catch(er => console.log(er));
+        });
+
+        function createTooltip() {
+          const tooltip = document.createElement("div");
+          const style = tooltip.style;
+
+          tooltip.setAttribute("role", "tooltip");
+          tooltip.classList.add("tooltip");
+
+          const textElement = document.createElement("div");
+          textElement.classList.add("esri-widget");
+          tooltip.appendChild(textElement);
+
+          view.container.appendChild(tooltip);
+
+          let x = 0;
+          let y = 0;
+          let targetX = 0;
+          let targetY = 0;
+          let visible = false;
+
+          // move the tooltip progressively
+          function move() {
+            x += (targetX - x) * 0.1;
+            y += (targetY - y) * 0.1;
+
+            if (Math.abs(targetX - x) < 1 && Math.abs(targetY - y) < 1) {
+              x = targetX;
+              y = targetY;
+            } else {
+              requestAnimationFrame(move);
+            }
+
+            style.transform = "translate3d(" + Math.round(x) + "px," + Math.round(
+              y) + "px, 0)";
+          }
+
+          return {
+            show(point, text) {
+              if (!visible) {
+                x = point.x;
+                y = point.y;
+              }
+
+              targetX = point.x;
+              targetY = point.y;
+              style.opacity = "1";
+              visible = true;
+              textElement.innerHTML = text;
+
+              move();
+            },
+
+            hide() {
+              style.opacity = "0";
+              visible = false;
+            }
+          };
+        }
+
+      });
+  </script>
+</head>
+
+<body>
+  <div id="viewDiv"></div>
+</body>
+
+</html>
