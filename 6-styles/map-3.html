@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title>Map 3</title>
+
+  <style>
+    html,
+    body,
+    #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+
+<link rel="stylesheet" href="https://js.arcgis.com/4.10/esri/themes/light-green/main.css">
+
+  <script src="https://js.arcgis.com/4.10/"></script>
+
+  <script>
+    require([
+      "esri/views/MapView",
+      "esri/WebMap",
+      "esri/widgets/Legend"
+    ], function(
+      MapView, WebMap, Legend
+    ) {
+
+      var webmap = new WebMap({
+        portalItem: {
+          id: "e5bdc981c83c4d008a359d46a6aa05ac"
+        }
+      });
+
+      var view = new MapView({
+        map: webmap,
+        container: "viewDiv",
+        center: [-74.00536, 40.70556],
+        zoom: 8
+      });
+
+      var legend = new Legend({
+        view: view
+      });
+      view.ui.add(legend, "bottom-right");
+    });
+  </script>
+</head>
+
+<body>
+  <div id="viewDiv"></div>
+</body>
+
+</html>
