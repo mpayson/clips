@@ -13,4 +13,4 @@
 
 ### `5-search` [live](https://mpayson.github.io/clips/5-search.html) | [code](/5-search.html) | [original](https://developers.arcgis.com/javascript/latest/sample-code/widgets-search-3d/index.html)
 
-### `6-styles` [maps](/6-styles)
+### `6-styles` [maps](/6-styles/README.md)
