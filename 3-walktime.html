@@ -151,7 +151,7 @@
             };
             
             highlight = lyrView.highlight(graphic);
-            tooltip.show(event, `<b>Walk time:</b> ${graphic.attributes['walkTimeToStopsInService']} min`);
+            tooltip.show(evt, `<b>Walk time:</b> ${graphic.attributes['walkTimeToStopsInService']} min`);
           })
           .catch(er => console.log(er));
         });
