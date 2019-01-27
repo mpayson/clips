@@ -10,4 +10,4 @@
 * `5-search` [live](https://mpayson.github.io/clips/5-search.html) | [code](/5-search.html) | [original](https://developers.arcgis.com/javascript/latest/sample-code/widgets-search-3d/index.html)
 * `6-styles` [maps](https://github.com/mpayson/clips/blob/master/6-styles/README.md)
 * `7-labels` [live](https://mpayson.github.io/clips/7-labels.html) | [code](/7-labels.html) | [original](https://developers.arcgis.com/javascript/latest/sample-code/labels-multiple-classes/)
-* `8-dataselection` [live](https://mpayson.github.io/clips/8-dataselection.html) | [code](/8-dataselection.html) | <- original
+* `8-dataselection` [live](https://mpayson.github.io/clips/8-dataselection.html) | [code](/8-dataselection.html) <- original
