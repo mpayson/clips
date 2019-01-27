@@ -45,7 +45,10 @@
           container: "viewDiv",
           map: map,
           center: [-81.95110, 28.05891],  
-          zoom: 8
+          zoom: 8,
+          highlightOptions: {
+            fillOpacity: 0.15
+          }
         });
         view.popup.actions = [];
         view.popup.dockOptions = {
@@ -114,9 +117,11 @@
           lyrView.queryFeatures(statQuery).then(res => {
             let attrs = res.features[0] ? res.features[0].attributes : null;
             if(!attrs) return;
+            const avg = Math.round(attrs['AADT_avg']);
+            const std = Math.round(attrs['AADT_std']);
             view.popup.open({
               title: 'Florida Traffic',
-              content: `<h3>Average Daily Volume: ${Math.round(attrs['AADT_avg'])} (σ=${Math.round(attrs['AADT_std'])})</h3>`,
+              content: `<font size="3">Average daily traffic: <font size="4"><b>${avg} vehicles</b></font> (σ=${std})</font>`,
               location: geometry.centroid
             })
             console.log(attrs, geometry.centroid);
