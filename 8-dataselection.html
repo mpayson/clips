@@ -101,7 +101,7 @@
           polygonGraphicsLayer.removeAll();
 
           // client-side statistics query
-          // get average and standard deviation capacity
+          // get average and standard deviation volume
           const statQuery = {
             geometry: geometry,
             outStatistics: [{
@@ -112,23 +112,27 @@
               onStatisticField: "AADT",
               outStatisticFieldName: "AADT_std",
               statisticType: "stddev"
+            }, {
+              onStatisticField: "AADT",
+              outStatisticFieldName: "AADT_sum",
+              statisticType: "sum"
             }]
           };
+          // show the results in a popup
           lyrView.queryFeatures(statQuery).then(res => {
             let attrs = res.features[0] ? res.features[0].attributes : null;
             if(!attrs) return;
-            const avg = Math.round(attrs['AADT_avg']);
-            const std = Math.round(attrs['AADT_std']);
+            const avg = Math.round(attrs['AADT_avg']).toLocaleString();
+            const std = Math.round(attrs['AADT_std']).toLocaleString();
+            const sum = Math.round(attrs['AADT_sum']).toLocaleString();
             view.popup.open({
               title: 'Florida Traffic',
-              content: `<font size="3">Average daily traffic: <font size="4"><b>${avg} vehicles</b></font> (σ=${std})</font>`,
+              content: `<font size="3">Daily volume: <font size="4"><b>${sum}</b></font> vehicles <i>(μ=${avg} σ=${std})</i></font>`,
               location: geometry.centroid
             })
-            console.log(attrs, geometry.centroid);
-
           })
 
-          // client-side query for all geometries
+          // client-side query for selected IDs
           // highlight the selected geometries
           const query = {geometry: geometry}
           lyrView.queryObjectIds(query).then(ids => {
