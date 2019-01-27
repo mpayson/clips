@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title>8 - Data Selection</title>
+
+  <link rel="stylesheet" href="https://js.arcgis.com/4.10/esri/themes/dark/main.css">
+  <script src="https://js.arcgis.com/4.10/"></script>
+
+  <style>
+    html,
+    body,
+    #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+
+  <script>
+    require([
+        "esri/Map",
+        "esri/views/MapView",
+        "esri/layers/FeatureLayer",
+        "esri/layers/GraphicsLayer",
+        "esri/widgets/Sketch/SketchViewModel",
+        "esri/Graphic",
+      ],
+      function(
+        Map, MapView, FeatureLayer, GraphicsLayer, SketchViewModel, Graphic
+      ) {
+        
+        /****************************************************
+          * Initialize the map objects
+        ****************************************************/
+        let lyrView;
+
+        const map = new Map({
+          basemap: "dark-gray-vector"
+        });  
+
+        const view = new MapView({
+          container: "viewDiv",
+          map: map,
+          center: [-81.95110, 28.05891],  
+          zoom: 8
+        });
+        view.popup.actions = [];
+        view.popup.dockOptions = {
+          buttonEnabled: false
+        }
+
+        const lyr = new FeatureLayer({
+          portalItem: {
+            id: 'cca8f554a0764b94b35f8b1781e399de'
+          }
+        });
+        map.add(lyr);
+
+        view.whenLayerView(lyr).then(lV => lyrView = lV);
+
+        /****************************************************
+          * Initialize the drawing objects
+        ****************************************************/
+
+        // add a layer to display the sketched polygons
+        const polygonGraphicsLayer = new GraphicsLayer();
+        map.add(polygonGraphicsLayer);
+
+        // create the sketch view model
+        let sketchViewModel = new SketchViewModel({
+          view: view,
+          layer: polygonGraphicsLayer
+        });
+
+        // add a button to initiate drawing
+        view.ui.add("select-by-polygon", "top-left");
+        const selectButton = document.getElementById("select-by-polygon");
+
+        // initiate drawing when the button is clicked
+        selectButton.addEventListener("click", function() {
+          view.popup.close();
+          sketchViewModel.create("polygon");
+        });
+
+        /****************************************************
+          * Selection logic
+        ****************************************************/
+        let highlight;
+
+        // Listen to sketchViewModel's create event.
+        sketchViewModel.on("create", evt => {
+          if(evt.state !== "complete" || !lyrView) return;
+
+          const geometry = evt.graphic.geometry;
+          polygonGraphicsLayer.removeAll();
+
+          // client-side statistics query
+          // get average and standard deviation capacity
+          const statQuery = {
+            geometry: geometry,
+            outStatistics: [{
+              onStatisticField: "AADT",
+              outStatisticFieldName: "AADT_avg",
+              statisticType: "avg"
+            }, {
+              onStatisticField: "AADT",
+              outStatisticFieldName: "AADT_std",
+              statisticType: "stddev"
+            }]
+          };
+          lyrView.queryFeatures(statQuery).then(res => {
+            let attrs = res.features[0] ? res.features[0].attributes : null;
+            if(!attrs) return;
+            view.popup.open({
+              title: 'Florida Traffic',
+              content: `<h3>Average Daily Volume: ${Math.round(attrs['AADT_avg'])} (σ=${Math.round(attrs['AADT_std'])})</h3>`,
+              location: geometry.centroid
+            })
+            console.log(attrs, geometry.centroid);
+
+          })
+
+          // client-side query for all geometries
+          // highlight the selected geometries
+          const query = {geometry: geometry}
+          lyrView.queryObjectIds(query).then(ids => {
+            if(highlight) highlight.remove();
+            if(!ids || ids.length < 1) return;
+            highlight = lyrView.highlight(ids);
+          })
+        });
+
+      });
+  </script>
+</head>
+
+<body>
+  <div id="viewDiv"></div>
+  <div id="select-by-polygon" class="esri-widget esri-widget--button esri-widget esri-interactive"
+    title="Select features by polygon">
+    <span class="esri-icon-polygon"></span>
+  </div>
+</body>
+
+</html>
