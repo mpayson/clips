@@ -7,7 +7,7 @@
 ## Styled Vector Maps
 
 * `style-vector-1` [live](https://mpayson.github.io/clips/6-styles/style-vector-1.html) | [code](/6-styles/style-vector-1.html) | [original](https://esripdx.maps.arcgis.com/apps/Cascade/index.html?appid=9a79059a75e249039d24740758e4624b)
-* `style-vector-2` [live](https://mpayson.github.io/clips/6-styles/style-vector-2.html) | [code](/6-styles/std-vector-3.html) | [original](https://esripdx.maps.arcgis.com/apps/Cascade/index.html?appid=9a79059a75e249039d24740758e4624b)
+* `style-vector-2` [live](https://mpayson.github.io/clips/6-styles/style-vector-2.html) | [code](/6-styles/std-vector-2.html) | [original](https://esripdx.maps.arcgis.com/apps/Cascade/index.html?appid=9a79059a75e249039d24740758e4624b)
 * `style-vector-3` [live](https://mpayson.github.io/clips/6-styles/style-vector-3.html) | [code](/6-styles/std-vector-3.html) | [original](https://esripdx.maps.arcgis.com/apps/Cascade/index.html?appid=9a79059a75e249039d24740758e4624b)
 
 ## Ready-to-use Content
