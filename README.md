@@ -29,16 +29,20 @@
 
 #### `9-3dmovement` [live](http://coolmaps.esri.com/#2) | [code] **TODO** | [original](http://coolmaps.esri.com/#2)
 > Observe animated people and metrics relating to homeless shelter activity in NYC
+
 > **TODO** simplify?
 
 #### `10-footprints` [live](https://mpayson.github.io/clips/10-footprints.html) | [code](/10-footprints.html) | [original](https://developers.arcgis.com/javascript/latest/sample-code/visualization-vv-color-animate/index.html)
 > Click play to animate NYC building footprint construction over time
+
 > **TODO** simplify?
 
 #### `11-routing` [live](https://nixta.github.io/pubnub-tracking-demo-version/demo.html) | [code & orginal](https://github.com/nixta/pubnub-tracking-demo-version)
 > Click play to animate a delivery to multiple destinations with optimized routes and arrival notifications
+
 > **TODO** simplify and build demo with key components
 
 #### `12-hurricane` [live](https://ycabon.github.io/2018-devsummit-plenary/2-hurricanes.html) | [code & original](https://github.com/ycabon/2018-devsummit-plenary)
 > Drop CSV and click explore to highlight different hurricane tracks and associated information
+
 > **TODO** simplify and build demo with key components
