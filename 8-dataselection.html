@@ -127,7 +127,7 @@
             const sum = Math.round(attrs['AADT_sum']).toLocaleString();
             view.popup.open({
               title: 'Florida Traffic',
-              content: `<font size="3">Daily volume: <font size="4"><b>${sum}</b></font> vehicles <i>(μ=${avg} σ=${std})</i></font>`,
+              content: `<font size="3">Daily volume: <font size="4"><b>${sum}</b></font> vehicles <i>(μ=${avg} σ=${std})</i>P</font>`,
               location: geometry.centroid
             })
           })
