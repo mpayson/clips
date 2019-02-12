@@ -33,15 +33,22 @@
 
       var map = new Map({
         portalItem: {
-          id: "9da0fe86875e40f5980e947e158a7842"
+          id: "5906875e5b4746b48da6049d906b82e4"
         }
       });
 
       var view = new MapView({
         map: map,
         container: "viewDiv",
-        zoom: 13,
-        center: [-74.00150, 40.72108]
+        popup: {
+          dockEnabled: true,
+          dockOptions: {
+            // Disables the dock button from the popup
+            buttonEnabled: false,
+            // Ignore the default sizes that trigger responsive docking
+            breakpoint: false,
+          }
+        },
       });
 
       var legend = new Legend({
@@ -49,7 +56,7 @@
       });
 
       // Add widget to the bottom right corner of the view
-      view.ui.add(legend, "bottom-right");
+      view.ui.add(legend, "bottom-left");
 
     });
   </script>
