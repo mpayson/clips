@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
-  <title>8 - Data Selection</title>
+  <title>3 - Data Selection</title>
 
   <link rel="stylesheet" href="https://js.arcgis.com/4.10/esri/themes/dark/main.css">
   <script src="https://js.arcgis.com/4.10/"></script>
@@ -106,14 +106,6 @@
             geometry: geometry,
             outStatistics: [{
               onStatisticField: "AADT",
-              outStatisticFieldName: "AADT_avg",
-              statisticType: "avg"
-            }, {
-              onStatisticField: "AADT",
-              outStatisticFieldName: "AADT_std",
-              statisticType: "stddev"
-            }, {
-              onStatisticField: "AADT",
               outStatisticFieldName: "AADT_sum",
               statisticType: "sum"
             }]
@@ -122,12 +114,10 @@
           lyrView.queryFeatures(statQuery).then(res => {
             let attrs = res.features[0] ? res.features[0].attributes : null;
             if(!attrs) return;
-            const avg = Math.round(attrs['AADT_avg']).toLocaleString();
-            const std = Math.round(attrs['AADT_std']).toLocaleString();
             const sum = Math.round(attrs['AADT_sum']).toLocaleString();
             view.popup.open({
               title: 'Florida Traffic',
-              content: `<font size="3">Daily volume: <font size="4"><b>${sum}</b></font> vehicles <i>(μ=${avg} σ=${std})</i>P</font>`,
+              content: `<font size="3">Daily volume: <font size="4"><b>${sum}</b></font> vehicles</font>`,
               location: geometry.centroid
             })
           })
