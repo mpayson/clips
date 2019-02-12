@@ -26,7 +26,7 @@
 
 #### `8-walktimes` [live](https://mpayson.github.io/clips/8-walktime.html) | [code](/8-walktime.html) | [original](https://github.com/RalucaNicola/JSAPI_demos)
 > Pan around and hover over buildings to see walk times to the nearest public transit station
-
+x
 #### `9-3dmovement` [live](http://coolmaps.esri.com/#2) | [code] **TODO** | [original](http://coolmaps.esri.com/#2)
 > Observe animated people and metrics relating to homeless shelter activity in NYC
 

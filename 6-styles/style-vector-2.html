@@ -33,8 +33,8 @@
       var view = new MapView({
         container: "viewDiv",
         map: map,
-        center: [3.97010, 43.46476],
-        zoom: 5,
+        center: [-71.06028, 42.36285],
+        zoom: 15
       });
 
       /********************************************************************
@@ -43,7 +43,7 @@
        * The url must point to the style or the vector tile service
        *********************************************************************/
       var tileLayer = new VectorTileLayer({
-        url: "https://www.arcgis.com/sharing/rest/content/items/3b3665c4498b478191b8b016e5897508/resources/styles/root.json?f=json"
+        url: "https://www.arcgis.com/sharing/rest/content/items/dfb04de5f3144a80bc3f9f336228d24a/resources/styles/root.json?f=json"
       });
       map.add(tileLayer);
     });
