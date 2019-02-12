@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title>12 - Hurricane</title>
+
+  <link rel="stylesheet" href="https://js.arcgis.com/4.10/esri/themes/dark/main.css">
+
+  <style>
+    html,
+    body,
+    #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+      background-color: black;
+    }
+    .tooltip {
+      position: absolute;
+      pointer-events: none;
+      transition: opacity 200ms;
+    }
+
+    .tooltip>div {
+      margin: 0 auto;
+      padding: 5px;
+      background: rgba(0, 0, 0, 0.8);
+      box-shadow: 0px 15px 40px 0px rgba(0, 0, 0, 0.8);
+      border-radius: 4px;
+      transform: translate3d(-50%, -125%, 0);
+      font-family: "Avenir Next W00","Helvetica Neue",Helvetica,Arial,sans-serif;
+      color: #00c0f0
+    }
+  </style>
+
+  <script src="https://js.arcgis.com/4.10/"></script>
+
+  <script>
+    require([
+      "esri/WebMap",
+      "esri/layers/CSVLayer",
+      "esri/views/MapView",
+      "esri/widgets/Legend",
+      "esri/widgets/Expand",
+      "esri/Graphic",
+      "esri/geometry/Circle",
+    ], function(
+      WebMap, CSVLayer, MapView,
+      Legend, Expand, Graphic, Circle
+    ) {
+
+      const url = "/data/Hurricanes.csv";
+
+      const layer = new CSVLayer({
+        title: "Hurricanes",
+        url: url,
+        copyright: "NOAA",
+        renderer: {
+          type: "unique-value",
+          field: "Category",
+          uniqueValueInfos: createUniqueValueInfos()
+        }
+      });
+
+      const map = new WebMap({
+        basemap: {
+          portalItem: {
+            id: "3113eacc129942b4abde490a51aeb33f"
+          }
+        },
+        layers: [layer]
+      });
+
+      const view = new MapView({
+        container: "viewDiv",
+        map: map,
+        highlightOptions: {
+          color: "white"
+        }
+      });
+
+      const legendExpand = new Expand({
+        view: view,
+        content: new Legend({
+          view: view,
+          style: "card"
+        })
+      });
+      view.ui.add(legendExpand, "top-left");
+
+      let lyrView, drawHandle;
+      view.whenLayerView(layer).then(lv => {
+        lyrView = lv;
+        drawHandle = view.on("drag", evt => {
+          evt.stopPropagation();
+          view.graphics.removeAll();
+          const searchArea = new Circle({
+            center: view.toMap(evt),
+            radius: 500000
+          });
+          view.graphics.add(new Graphic({
+            geometry: searchArea,
+            symbol: {
+              type: "simple-fill",
+              style: "none",
+              outline: {
+                  color: "dark-gray",
+                  width: 2
+              }
+            }
+          }));
+          performInteraction(searchArea, evt);
+        });
+      })
+
+      function createUniqueValueInfos() {
+        const fireflyImages = [
+          "cat1.png",
+          "cat2.png",
+          "cat3.png",
+          "cat4.png",
+          "cat5.png"
+        ];
+
+        const baseUrl =
+          "https://arcgis.github.io/arcgis-samples-javascript/sample-data/";
+
+        return fireflyImages.map((url, i) => ({
+          value: i + 1,
+          symbol: {
+            type: "picture-marker",
+            url: baseUrl + url
+          }
+        }));
+      }
+
+      function createTooltip() {
+        const tooltip = document.createElement("div");
+        const style = tooltip.style;
+
+        tooltip.setAttribute("role", "tooltip");
+        tooltip.classList.add("tooltip");
+
+        const textElement = document.createElement("div");
+        textElement.classList.add("esri-widget");
+        tooltip.appendChild(textElement);
+
+        view.container.appendChild(tooltip);
+
+        let x = 0;
+        let y = 0;
+        let targetX = 0;
+        let targetY = 0;
+        let visible = false;
+
+        // move the tooltip progressively
+        function move() {
+          x += (targetX - x) * 0.1;
+          y += (targetY - y) * 0.1;
+
+          if (Math.abs(targetX - x) < 1 && Math.abs(targetY - y) < 1) {
+            x = targetX;
+            y = targetY;
+          } else {
+            requestAnimationFrame(move);
+          }
+
+          style.transform = "translate3d(" + Math.round(x) + "px," + Math.round(
+            y) + "px, 0)";
+        }
+
+        return {
+          show(point, text) {
+            if (!visible) {
+              x = point.x;
+              y = point.y;
+            }
+
+            targetX = point.x;
+            targetY = point.y;
+            style.opacity = "1";
+            visible = true;
+            textElement.innerHTML = text;
+
+            move();
+          },
+
+          hide() {
+            style.opacity = "0";
+            visible = false;
+          }
+        };
+      }
+
+      let promise, highlight;
+      let tooltip = createTooltip();
+      function performInteraction(searchArea, event){
+        promise && promise.cancel();
+        promise = layer.queryFeatures({
+          geometry: searchArea,
+          outStatistics: [{
+            onStatisticField: "wmo_wind",
+            outStatisticFieldName: "max_wmo_wind",
+            statisticType: "max"
+          }]
+        })
+        .then(stats => {
+          const maxWind = stats.features[0].attributes.max_wmo_wind;
+          return layer.queryFeatures({
+            geometry: searchArea,
+            where: "wmo_wind = " + maxWind,
+            outFields: ["Serial_Num", "Name"]
+          })
+          .then(maxWindFS => {
+            if(!maxWindFS.features[0]) return null;
+            return {
+              maxWind: maxWind,
+              hurricane: maxWindFS.features[0]
+            }
+          })
+        })
+        .then(result => {
+          if(!result) return;
+          const attr = result.hurricane.attributes;
+          tooltip.show(event, `<h1>Hurricane ${attr.Name}</h1><h3>${result.maxWind} km/h</h3>`)
+          return layer.queryObjectIds({
+            where: "Serial_Num = '" + attr.Serial_Num + "'"
+          })
+        })
+        .then(oids => {
+          highlight && highlight.remove();
+          highlight = null;
+          if(oids.length){
+            highlight = lyrView.highlight(oids);
+          }
+        })
+        .catch(er => {
+          if(er.dojoType) return;
+          console.log(er);
+        })
+      }
+
+
+    });
+  </script>
+</head>
+
+<body>
+  <div id="viewDiv"></div>
+</body>
+
+</html>

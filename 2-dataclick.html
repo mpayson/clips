@@ -25,14 +25,15 @@
     require([
       "esri/WebMap",
       "esri/views/MapView",
-      "esri/layers/Layer"
+      "esri/layers/Layer",
+      "esri/widgets/Legend"
     ], function(
-      Map, MapView, Layer
+      Map, MapView, Layer, Legend
     ) {
 
       var map = new Map({
         portalItem: {
-          id: "7cf802f2b7834d90991afffa31904d91"
+          id: "9da0fe86875e40f5980e947e158a7842"
         }
       });
 
@@ -42,6 +43,13 @@
         zoom: 13,
         center: [-74.00150, 40.72108]
       });
+
+      var legend = new Legend({
+        view: view
+      });
+
+      // Add widget to the bottom right corner of the view
+      view.ui.add(legend, "bottom-right");
 
     });
   </script>

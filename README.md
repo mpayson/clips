@@ -42,7 +42,5 @@
 
 > **TODO** simplify and build demo with key components
 
-#### `12-hurricane` [live](https://ycabon.github.io/2018-devsummit-plenary/2-hurricanes.html) | [code & original](https://github.com/ycabon/2018-devsummit-plenary)
+#### `12-hurricane` [live](https://mpayson.github.io/clips/12-hurricane.html) | [code](/12-hurricane.html) | [original](https://github.com/ycabon/2018-devsummit-plenary)
 > Drop CSV and click explore to highlight different hurricane tracks and associated information
-
-> **TODO** simplify and build demo with key components
